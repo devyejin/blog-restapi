@@ -1,0 +1,4 @@
+spring:
+  sql:
+    init:
+      mode: never # xxx.sql 파일을 자동으로 실행하지 않게 하는 옵션
