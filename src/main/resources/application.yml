@@ -21,3 +21,7 @@ spring:
   devtools:
     livereload:
       enabled: true
+
+jwt:
+  issuer: yejinoh58@gmail.com
+  secret_key: study-springboot
