@@ -23,6 +23,11 @@ public class User implements UserDetails { // UserDetails 상속받아 User 인�
     @Id
     private Long id;
 
+    //사용자 정보를 조회해서 users 테이블에 있다면 리소스 서버에서 제공해주는 이름으로 업데이트
+    //users 테이블에 없다면 새 사용자를 생성해서 데이터베이스에 저장
+    @Column(name="nickname", unique = true)
+    private String nickname;
+
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
@@ -30,9 +35,16 @@ public class User implements UserDetails { // UserDetails 상속받아 User 인�
     private String password;
 
     @Builder
-    public User(String email, String password, String auth) {
+    public User(String email, String password, String nickname) {
         this.email = email;
         this.password = password;
+        this.nickname = nickname;
+    }
+
+    public User update(String nickname) {
+        this.nickname = nickname;
+
+        return this;
     }
 
     //권한 반환
@@ -45,6 +57,8 @@ public class User implements UserDetails { // UserDetails 상속받아 User 인�
     public String getPassword() {
         return password;
     }
+
+
 
     // 사용자의 고유한 값 반환
     @Override

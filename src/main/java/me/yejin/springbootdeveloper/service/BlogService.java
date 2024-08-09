@@ -6,6 +6,7 @@ import me.yejin.springbootdeveloper.domain.Article;
 import me.yejin.springbootdeveloper.dto.AddArticleRequest;
 import me.yejin.springbootdeveloper.dto.UpdateArticleRequest;
 import me.yejin.springbootdeveloper.repository.BlogRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,8 +17,8 @@ public class BlogService {
 
     private final BlogRepository blogRepository;
 
-    public Article save(AddArticleRequest request) {
-        return blogRepository.save(request.toEntity());
+    public Article save(AddArticleRequest request, String userName) {
+        return blogRepository.save(request.toEntity(userName));
     }
 
     public List<Article> findAll() {
@@ -30,6 +31,12 @@ public class BlogService {
     }
 
     public void delete(Long id) {
+        Article article = blogRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("not found : " + id));
+
+        //게시글을 작성한 유저인지 확인한다. 불일치시 예외 발생
+        authorizeArticleAuthor(article);
+
         blogRepository.deleteById(id);
     }
 
@@ -38,8 +45,20 @@ public class BlogService {
         Article article = blogRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("not found : " + id));
 
+        //게시글을 작성한 유저인지 확인한다. 불일치시 예외 발생
+        authorizeArticleAuthor(article);
+
         article.update(request.getTitle(), request.getContent()); // 영속성 컨텍스트에서 entity 변경 감지
 
         return article;
+    }
+
+    //게시글을 작성한 유저인지 확인
+    private static void authorizeArticleAuthor(Article article) {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        if(!article.getAuthor().equals(userName)) {
+            throw new IllegalArgumentException("not authorized");
+        }
     }
 }

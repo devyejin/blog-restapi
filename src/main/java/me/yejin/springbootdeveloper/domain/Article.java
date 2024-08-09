@@ -21,6 +21,9 @@ public class Article {
     @Id
     private Long id;
 
+    @Column(name="author", nullable = false)
+    private String author;
+
     @Column(name="title", nullable=false)
     private String title;
 
@@ -36,7 +39,8 @@ public class Article {
     private LocalDateTime updatedAt;
 
     @Builder // 빌더 패턴, 생성자로 객체 생성할 때보다 명시적이라 가독성 높음
-    public Article(String title, String content) {
+    public Article(String author, String title, String content) {
+        this.author = author;
         this.title = title;
         this.content = content;
     }
