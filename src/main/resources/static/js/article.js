@@ -55,6 +55,8 @@ const createButton = document.getElementById('create-btn');
 if(createButton) {
     createButton.addEventListener("click", event => {
 
+        console.log("등록 버튼 클릭");
+
         let body = JSON.stringify({
             title : document.getElementById("title").value,
             content : document.getElementById("content").value,
@@ -70,7 +72,7 @@ if(createButton) {
             location.replace("/articles");
         }
 
-        httpRequest
+        httpRequest("POST", "/api/articles", body, success, fail );
 
     })
 }
