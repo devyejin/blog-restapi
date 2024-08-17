@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
-
+//리소스 서버에 사용자 정보를 요청할 때, 인증 코드 전달함
 @RequiredArgsConstructor
 @Service
 public class OAuth2UserCustomService extends DefaultOAuth2UserService {

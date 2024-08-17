@@ -19,7 +19,7 @@ public class BlogViewController {
 
     private final BlogService blogService;
 
-    @GetMapping("/articles")
+    @GetMapping({"/articles", "/"})
     public String articles(Model model) {
         List<ArticleListViewResponse> articles = blogService.findAll().stream()
                 .map(ArticleListViewResponse::new)

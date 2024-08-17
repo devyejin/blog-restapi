@@ -8,7 +8,20 @@
         .gradient-custom {
             background: #6a11cb;
             background: -webkit-linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1));
-            background: linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1))
+            background: linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1));
+        }
+
+        .btn-custom {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+        }
+
+        .btn-custom img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
         }
     </style>
 </head>
@@ -19,9 +32,12 @@
             <div class="card-body p-5 text-center">
                 <h2 class="text-white">LOGIN</h2>
                 <p class="text-white-50 mt-2 mb-5">서비스 사용을 위해 로그인을 해주세요!</p>
-                <div class = "mb-2">
-                    <a href="/oauth2/authorization/google">
-                        <img src="/img/google.png">
+                <div>
+                    <a href="/oauth2/authorization/google" class="btn-custom">
+                        <img src="/img/google.png" alt="Google Login">
+                    </a>
+                    <a href="#" class="btn-custom">
+                        <img src="/img/kakao_login_btn.png" alt="Kakao Login">
                     </a>
                 </div>
             </div>

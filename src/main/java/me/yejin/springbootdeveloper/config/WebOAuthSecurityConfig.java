@@ -65,10 +65,11 @@ public class WebOAuthSecurityConfig {
                         //Authorization 요청과 관련된 상태 저장 (세션 대신 쿠키 이용)
                         .authorizationEndpoint(authorizationEndpoint ->
                                 authorizationEndpoint.authorizationRequestRepository(oAuth2AuthorizationRequestBasedOnCookieRepository()))
-
+                        // OAuth2 인증 성공 후, 사용자 정보 요청 시 사용자 정보를 가져오는 엔드포인트
                         .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint.userService(oAuth2UserCustomService))
-                        //인증 성공 시 실행할 핸들러
+                        //사용자 인증 성공 시 실행할 핸들러
                         .successHandler(oAuth2SuccessHandler())
+
                 )
                 // 예외 처리 /api로 시작하는 url인 경우 401 상태 코드를 반환한다.
                 .exceptionHandling(exceptionHandling -> exceptionHandling

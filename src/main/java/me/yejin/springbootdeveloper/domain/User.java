@@ -34,6 +34,10 @@ public class User implements UserDetails { // UserDetails 상속받아 User 인�
     @Column(name = "password")
     private String password;
 
+    private String provider;
+
+    private String provierId;
+
     @Builder
     public User(String email, String password, String nickname) {
         this.email = email;

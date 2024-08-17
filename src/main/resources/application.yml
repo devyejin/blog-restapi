@@ -25,5 +25,10 @@ spring:
   config:
     import: application-secret.yml
 
+logging:
+  level:
+    root: INFO
+    org.springframework.web: DEBUG
+
 
 

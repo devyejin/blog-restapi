@@ -1,6 +1,5 @@
 package me.yejin.springbootdeveloper.config.oauth;
 
-import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,6 +22,8 @@ import java.time.Duration;
 
 //reuse 프로젝트할 때는 SimpleUrlAuthenticationSuccessHandler 이용해서 config에서만 설정해줬었음
 //이번에는 쿠키에 토큰 저장 작업을 추가해서 상속받아 오버라이드해서 작업
+//클라이언트 앱이 인증 코드를 사용해서 인증 서버로 부터 액세스 토큰을 받고서 (인증 최종 완료)  OAuth2SuccessHandler 동작
+//사용자(User) 정보를 클라이언트 앱에 저장하는 작업은 앞 선 OAuth2UserCustomService 에서 처리
 @RequiredArgsConstructor
 @Component
 @Log4j2
@@ -38,16 +39,16 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final OAuth2AuthorizationRequestBasedOnCookieRepository authorizationRequestRepository;
     private final UserService userService;
 
-    // 인증 성공시
+    //인증 성공시
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+        log.info("인증 서버로부터 사용자 인증 완료, 사용자에게 액세스, 리프레쉬 토큰 작업 시작");
 
-        log.info("성공 로직 탐");
-
-        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal(); // 인증 서버로부터 받은 OAuth2User 객체는 Authentication 에 보관
         User user = userService.findByEmail((String) oAuth2User.getAttributes().get("email"));
 
-        //리프레시 토큰 생성 -> db 저장 -> 쿠키에 저장
+        //리프레시 토큰 생성 -> db 저장 -> 쿠키에 저장 (Refresh Token은 서버에 저장하고 Access 는 클라가 저장)
+        //TODO : TEST RDB -> Redis 로 변경
         String refreshToken = tokenProvider.generateToken(user, REFRESH_TOKEN_DURATION);
         saveRefreshToken(user.getId(), refreshToken); // db저장
         addRefreshTokenToCookie(request, response, refreshToken); //쿠키에 리프레시 토큰 저장
@@ -59,10 +60,11 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         // 인증 관련 설정값, 쿠키 제거
         clearAuthenticationAttributes(request, response);
 
-        //리다이렉트
+        //리다이렉트 ( 액세스 토큰은 쿼리 파라미터, 리프레쉬 토큰은 쿠키로 전달)
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
-        // 생성된 리프레시 토큰을 전달받아 데이터베이스에 저장
+
     }
+
 
     //생성된 리프레시 토큰을 전달받아 데이터베이스에 저장
     private void saveRefreshToken(Long userId, String newRefreshToken) {
@@ -80,12 +82,16 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         CookieUtil.addCookie(response, REFRESH_TOKEN_COOKIE_NAME, refreshToken, cookieMaxAge);
     }
 
-    //액세스 토큰을 path에 추가
+    //액세스 토큰을 path에 추가, 쿼리 파라미터로 전달
+    //TODO : 보안에 취약하므로 HTTP 헤더 방식으로 개선
     private String getTargetUrl(String token) {
-        return UriComponentsBuilder.fromUriString(REDIRECT_PATH)
+        String url = UriComponentsBuilder.fromUriString(REDIRECT_PATH)
                 .queryParam("token", token)
                 .build()
                 .toUriString();
+
+        log.info("target Url = {}", url);
+        return url;
     }
 
     // 인증 관련 설정값, 쿠키 제거
