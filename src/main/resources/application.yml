@@ -22,8 +22,22 @@ spring:
     livereload:
       enabled: true
 
-  config:
-    import: application-secret.yml
+#  config:
+#    import: application-secret.yml
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: temp
+            client-secret: temp
+            scope:
+              - email
+              - profile
+
+jwt:
+  issuer: yejinoh58@gmail.com
+  secret_key: temp
 
 logging:
   level:
