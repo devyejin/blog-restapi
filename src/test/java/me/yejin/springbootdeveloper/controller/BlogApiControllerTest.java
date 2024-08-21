@@ -7,6 +7,7 @@ import me.yejin.springbootdeveloper.dto.AddArticleRequest;
 import me.yejin.springbootdeveloper.dto.UpdateArticleRequest;
 import me.yejin.springbootdeveloper.repository.BlogRepository;
 import me.yejin.springbootdeveloper.repository.UserRepository;
+import net.datafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -202,6 +203,57 @@ class BlogApiControllerTest {
                 .author(user.getUsername()) //Mock Object에서 "username" 반환
                 .content("content")
                 .build());
+
+    }
+
+    @DisplayName("addArticle: 아티클 추가할 때 title 입력값이 null이면 실패한다.")
+    @Test
+    public void addArticleNullValidation() throws Exception {
+        //given
+        final String url = "/api/articles";
+        final String title = null;
+        final String content = "content";
+        final AddArticleRequest addArticleRequest = new AddArticleRequest(title, content);
+
+        final String requesstBody = objectMapper.writeValueAsString(addArticleRequest);
+
+        Principal principal = Mockito.mock(Principal.class);
+        Mockito.when(principal.getName()).thenReturn("username"); // Mock Object에서 getName() 메서드를 호출할 때 "username"을 return 해라
+
+        //when
+        ResultActions result = mockMvc.perform(post(url)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .principal(principal)
+                .content(requesstBody));
+
+        //then
+        result.andExpect(status().isBadRequest());
+    }
+
+    @DisplayName("addArticle: 아티클을 추가할 때 title이 10자를 넘으면 실패한다.")
+    @Test
+    public void addArticleSizeValidation() throws Exception {
+        //given
+        Faker faker = new Faker(); // 테스트시 fake data 만들어주는 라이브러리
+
+        final String url = "/api/articles";
+        final String title = faker.lorem().characters(12);
+        final String content = "content";
+        final AddArticleRequest userRequest = new AddArticleRequest(title, content);
+
+        String requestBody = objectMapper.writeValueAsString(userRequest);
+
+        Principal principal = Mockito.mock(Principal.class);
+        Mockito.when(principal.getName()).thenReturn("username");
+
+        //when
+        ResultActions result = mockMvc.perform(post(url)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .principal(principal)
+                .content(requestBody));
+
+        //then
+        result.andExpect(status().isBadRequest());
 
     }
 
