@@ -137,3 +137,30 @@ function getCookie(key) {
 
     return result;
 }
+
+//댓글 생성 기능
+const commentCreateButton = document.getElementById('comment-create-btn');
+
+if(commentCreateButton) {
+    commentCreateButton.addEventListener('click', event => {
+         articleId = document.getElementById('article-id').value;
+
+         body = JSON.stringify({
+             articleId: articleId,
+             content: document.getElementById('content').value
+         });
+
+         function success() {
+             alert('댓글 등록이 완료되었습니다.');
+             location.replace('/articles/'+ articleId);
+         };
+
+         function fail() {
+             alert('댓글 등록이 실패했습니다.');
+             location.replace('/articles/'+ articleId);
+         };
+
+         httpRequest('POST', '/api/comments', body, success, fail)
+
+    });
+}

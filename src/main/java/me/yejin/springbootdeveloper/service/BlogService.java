@@ -4,9 +4,12 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import me.yejin.springbootdeveloper.config.error.exception.ArticleNotFoundException;
 import me.yejin.springbootdeveloper.domain.Article;
+import me.yejin.springbootdeveloper.domain.Comment;
 import me.yejin.springbootdeveloper.dto.AddArticleRequest;
+import me.yejin.springbootdeveloper.dto.AddCommentRequest;
 import me.yejin.springbootdeveloper.dto.UpdateArticleRequest;
 import me.yejin.springbootdeveloper.repository.BlogRepository;
+import me.yejin.springbootdeveloper.repository.CommentRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +20,7 @@ import java.util.List;
 public class BlogService {
 
     private final BlogRepository blogRepository;
+    private final CommentRepository commentRepository;
 
     public Article save(AddArticleRequest request, String userName) {
         return blogRepository.save(request.toEntity(userName));
@@ -62,4 +66,11 @@ public class BlogService {
             throw new IllegalArgumentException("not authorized");
         }
     }
+
+    public Comment addComment(AddCommentRequest request, String userName) {
+        Article article = blogRepository.findById(request.getArticleId())
+                .orElseThrow(() -> new IllegalArgumentException("not found : " + request.getArticleId()));
+        return commentRepository.save(request.toEntity(userName, article));
+    }
+
 }

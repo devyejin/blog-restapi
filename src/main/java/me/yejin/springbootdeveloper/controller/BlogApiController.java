@@ -2,9 +2,8 @@ package me.yejin.springbootdeveloper.controller;
 
 import lombok.RequiredArgsConstructor;
 import me.yejin.springbootdeveloper.domain.Article;
-import me.yejin.springbootdeveloper.dto.AddArticleRequest;
-import me.yejin.springbootdeveloper.dto.ArticleResponse;
-import me.yejin.springbootdeveloper.dto.UpdateArticleRequest;
+import me.yejin.springbootdeveloper.domain.Comment;
+import me.yejin.springbootdeveloper.dto.*;
 import me.yejin.springbootdeveloper.service.BlogService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -62,5 +61,14 @@ public class BlogApiController {
 
         return ResponseEntity.ok()
                 .body(updatedArticle);
+    }
+
+    @PostMapping("/api/comments")
+    public ResponseEntity<AddCommentResponse> addComment(@RequestBody AddCommentRequest request, Principal principal){
+        Comment savedComment = blogService.addComment(request, principal.getName());
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new AddCommentResponse(savedComment));
+
     }
 }

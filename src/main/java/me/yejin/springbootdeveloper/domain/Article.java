@@ -9,6 +9,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @EntityListeners(AutoCloseable.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -37,6 +38,10 @@ public class Article {
     @LastModifiedDate
     @Column(name="updated_at")
     private LocalDateTime updatedAt;
+
+    //TODO : Cascade 로 삭제는 안하고 댓글 게시자 마이페이지에서는 조회 가능하도록 처리
+    @OneToMany(mappedBy = "article", cascade = CascadeType.REMOVE) // Comment Entity가 article 필드를 사용해서 Article Entity를 참조
+    private List<Comment> comments;
 
     @Builder // 빌더 패턴, 생성자로 객체 생성할 때보다 명시적이라 가독성 높음
     public Article(String author, String title, String content) {
