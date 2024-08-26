@@ -295,7 +295,7 @@ class BlogApiControllerTest {
         //then
         resultActions
                 .andDo(print())
-                .andExpect(status().isMethodNotAllowed())
+                .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value(ErrorCode.ARTICLE_NOT_FOUND.getMessage()))
                 .andExpect(jsonPath("$.code").value(ErrorCode.ARTICLE_NOT_FOUND.getCode()));
     }

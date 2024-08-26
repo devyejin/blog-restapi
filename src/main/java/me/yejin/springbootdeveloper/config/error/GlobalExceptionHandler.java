@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.yejin.springbootdeveloper.config.error.exception.BusinessBaseException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -27,6 +28,13 @@ public class GlobalExceptionHandler {
     protected ResponseEntity<ErrorResponse> handle(Exception e) {
         log.error("Exception", e);
         return createErrorResponseEntity(ErrorCode.INTERNAL_SERVER_ERROR);
+    }
+
+    //Validation 에러시
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    protected ResponseEntity<ErrorResponse> handle(MethodArgumentNotValidException e) {
+        log.error("MethodArgumentNotValidException", e);
+        return createErrorResponseEntity(ErrorCode.INVALID_INPUT_VALUE);
     }
 
     private ResponseEntity<ErrorResponse> createErrorResponseEntity(ErrorCode errorCode) {

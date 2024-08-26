@@ -1,5 +1,6 @@
 package me.yejin.springbootdeveloper.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import me.yejin.springbootdeveloper.domain.Article;
 import me.yejin.springbootdeveloper.domain.Comment;
@@ -7,7 +8,6 @@ import me.yejin.springbootdeveloper.dto.*;
 import me.yejin.springbootdeveloper.service.BlogService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -20,7 +20,7 @@ public class BlogApiController {
     private final BlogService blogService;
 
     @PostMapping("/api/articles")
-    public ResponseEntity<Article> addArticle(@RequestBody @Validated AddArticleRequest request, Principal principal) {
+    public ResponseEntity<Article> addArticle(@RequestBody @Valid AddArticleRequest request, Principal principal) {
         Article savedArticle = blogService.save(request, principal.getName());
 
         return ResponseEntity.status(HttpStatus.CREATED)
