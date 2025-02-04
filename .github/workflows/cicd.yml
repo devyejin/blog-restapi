@@ -1,15 +1,21 @@
 #workflow 이름 지정
 name: CICD
 
-#워크플로우가 시작될 조건 지정 (main에 push가 발생할 때 마다 워크플로우 시작)
+# 워크플로우를 자동으로 실행할 이벤트를 정의 
 on:
+  #트리거 : push 이벤트
   push:
+    # 실행 조건 브랜치를 설정
     branches: [main]
 
+#실행될 작업들 정의, 잡들이 모여서 워크플로우
 jobs:
+  #작업의 이름 지정(빌드작업이야!)
   build:
-    runs-on: ubuntu-latest #실행 환경 지정
-    # 실행 스탭 지정 ( uses = 별도의 작업, run = 명령어)
+    #실행 환경 지정
+    runs-on: ubuntu-latest 
+    # 실행 스탭 지정 : 실제로 실행될 작업 내부 단계
+    #  ( uses = 별도의 작업, run = 명령어)
     steps:
       - uses: actions/checkout@v4
 
